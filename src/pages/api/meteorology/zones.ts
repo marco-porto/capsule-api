@@ -5,25 +5,24 @@ export default async function zones(request: NextApiRequest,response: NextApiRes
     if(request.method === 'GET'){
         if((request.body.local != undefined && request.body.local != null && request.body.local != '' ) && (request.body.filterBy != undefined && request.body.filterBy != null && request.body.filterBy != '' )){
             //Fetch ipma locations
-            const ipmaLocationsResponse = await fetch('https://api.ipma.pt/public-data/forecast/locations.json');
+            const ipmaLocationsResponse = await fetch(`${process.env.CAPSULE_API_DOMAIN}api/meteorology/list-zones`);
             const ipmaLocationsResponseJson = await ipmaLocationsResponse.json();
 
             //Search for location provide on GET
             let ipmaLocation = [];
 
-            if(request.body.filterBy == 'code'){
+            
+            if(request.body.filterBy == 'code'){ //-> by code
                 ipmaLocationsResponseJson.map(obj =>  {
                     if(obj.globalIdLocal == request.body.local)
                         ipmaLocation.push(obj);
                 });
-            }else if(request.body.filterBy == 'name'){
+            }else if(request.body.filterBy == 'name'){ //-> by name
                 ipmaLocationsResponseJson.map(obj =>  {
                     if(obj.local.toLowerCase() == request.body.local.toLowerCase())
                         ipmaLocation.push(obj);
                 });
             }
-            //Define 7 days of response cache (604800 seconds)
-            response.setHeader('Cache-Control','s-maxage=604800,stale-while-revalidate'); 
 
             //Before return ipmaLocation check if is != empty (true => return location | false => return 404 status)
             if(ipmaLocation.length != 0){

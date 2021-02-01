@@ -17,9 +17,6 @@ export default async function forecast(request: NextApiRequest,response: NextApi
                         ipmaForecast.push(obj);
                 });
 
-                //Define 12 hours of response cache (43200 seconds)
-                response.setHeader('Cache-Control','s-maxage=43200,stale-while-revalidate'); 
-
                 //Before return ipmaLocation check if is != empty (true => return location | false => return 404 status)
                 if(ipmaForecast.length != 0){
                     response.json(ipmaForecast);
