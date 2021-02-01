@@ -1,6 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 
-export default async function zonesList(request: NextApiRequest,response: NextApiResponse){
+export default async function listZones(request: NextApiRequest,response: NextApiResponse){
     //Check if request.method === GET (prevent none GET methods to this endpoint)
     if(request.method === 'GET'){
             //Fetch ipma locations

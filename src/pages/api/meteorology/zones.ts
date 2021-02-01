@@ -10,8 +10,7 @@ export default async function zones(request: NextApiRequest,response: NextApiRes
 
             //Search for location provide on GET
             let ipmaLocation = [];
-
-            
+ 
             if(request.body.filterBy == 'code'){ //-> by code
                 ipmaLocationsResponseJson.map(obj =>  {
                     if(obj.globalIdLocal == request.body.local)
