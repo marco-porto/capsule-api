@@ -1,5 +1,4 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
-import { execOnce } from 'next/dist/next-server/lib/utils';
 
 export default async function forecast(request: NextApiRequest,response: NextApiResponse){
     //Check if request.method === GET (prevent none GET methods to this endpoint)
