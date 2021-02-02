@@ -1,4 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
+import { execOnce } from 'next/dist/next-server/lib/utils';
 
 export default async function forecast(request: NextApiRequest,response: NextApiResponse){
     //Check if request.method === GET (prevent none GET methods to this endpoint)
@@ -27,10 +28,12 @@ export default async function forecast(request: NextApiRequest,response: NextApi
                 let ipmaForecast = [];
                 ipmaForecastResponseJson.map(obj =>  {
                     //Only return object with 24 hour forecast (idPeriodo = 24), prevent return 1 hour forecast (idPeriodo = 1) 
-                    if(obj.idPeriodo == 24){ 
-                        //ipmaForecast.push(obj);
-                        
+                    if(obj.idPeriodo == 24){         
                         ipmaForecast.push({
+                            date:{
+                                update:new Date(obj.dataUpdate).toLocaleString(),
+                                forecast:new Date(obj.dataPrev).toLocaleDateString()
+                            },
                             temperature:{
                                 min:obj.tMin,
                                 max:obj.tMax
@@ -56,6 +59,7 @@ export default async function forecast(request: NextApiRequest,response: NextApi
                     response.status(404).json({code:'Not Found'});
                 }
             }catch(exception){
+                console.log(exception)
                 response.status(404).json({code:'Not Found'});
             }
         }else{
