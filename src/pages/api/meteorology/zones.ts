@@ -1,6 +1,29 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
+import Cors from 'cors'
+
+//Enable CORS
+    // Initializing the cors middleware
+    const cors = Cors({
+        methods: ['GET', 'HEAD'],
+    });
+
+    // Helper method to wait for a middleware to execute before continuing
+    // And to throw an error when an error happens in a middleware
+    function runMiddleware(request: NextApiRequest, response:NextApiResponse, fn) {
+        return new Promise((resolve, reject) => {
+            fn(request, response, (result) => {
+            if (result instanceof Error) {
+                return reject(result)
+            }
+            return resolve(result)
+            })
+        })
+    };
 
 export default async function zones(request: NextApiRequest,response: NextApiResponse){
+    // Run the middleware
+    await runMiddleware(request,response, cors)
+    
     //Check if request.method === GET (prevent none GET methods to this endpoint)
     if(request.method === 'POST'){
         if((request.body.local != undefined && request.body.local != null && request.body.local != '' ) && (request.body.filterBy != undefined && request.body.filterBy != null && request.body.filterBy != '' )){
