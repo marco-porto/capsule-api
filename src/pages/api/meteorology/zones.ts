@@ -4,28 +4,27 @@ export default async function zones(request: NextApiRequest,response: NextApiRes
     //Check if request.method === GET (prevent none GET methods to this endpoint)
     if(request.method === 'GET'){
         if((request.body.local != undefined && request.body.local != null && request.body.local != '' ) && (request.body.filterBy != undefined && request.body.filterBy != null && request.body.filterBy != '' )){
-            //Fetch ipma locations
-            const ipmaLocationsResponse = await fetch(`${process.env.CAPSULE_API_DOMAIN}api/meteorology/list-zones`);
-            const ipmaLocationsResponseJson = await ipmaLocationsResponse.json();
+            //Fetch locations list from ./lists/zones
+            const locationsResponse = await fetch(`${process.env.CAPSULE_API_DOMAIN}api/meteorology/lists/zones`);
+            const locationsResponseJson = await locationsResponse.json();
 
             //Search for location provide on GET
-            let ipmaLocation = [];
- 
+            let location = [];
             if(request.body.filterBy == 'code'){ //-> by code
-                ipmaLocationsResponseJson.map(obj =>  {
+                locationsResponseJson.map(obj =>  {
                     if(obj.globalIdLocal == request.body.local)
-                        ipmaLocation.push(obj);
+                        location.push(obj);
                 });
             }else if(request.body.filterBy == 'name'){ //-> by name
-                ipmaLocationsResponseJson.map(obj =>  {
+                locationsResponseJson.map(obj =>  {
                     if(obj.local.toLowerCase() == request.body.local.toLowerCase())
-                        ipmaLocation.push(obj);
+                        location.push(obj);
                 });
             }
 
             //Before return ipmaLocation check if is != empty (true => return location | false => return 404 status)
-            if(ipmaLocation.length != 0){
-                response.json(ipmaLocation);
+            if(location.length != 0){
+                response.json(location);
             }else{
                 response.status(404).json({code:'Not Found'});
             }

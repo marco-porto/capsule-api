@@ -9,15 +9,47 @@ export default async function forecast(request: NextApiRequest,response: NextApi
                 //Fetch ipma forecast for a given location code
                 const ipmaForecastResponse = await fetch(`https://api.ipma.pt/public-data/forecast/aggregate/${request.body.localCode}.json`);
                 const ipmaForecastResponseJson = await ipmaForecastResponse.json();
-                
+
+                //get weather,rain and wind types from ./types
+                    //-> weather
+                    const weatherTypeResponse = await fetch(`${process.env.CAPSULE_API_DOMAIN}api/meteorology/types/weather`);
+                    const weatherTypeResponseJson = await weatherTypeResponse.json();
+
+                    //-> rain
+                    const rainTypeResponse = await fetch(`${process.env.CAPSULE_API_DOMAIN}api/meteorology/types/rain`);
+                    const rainTypeResponseJson = await rainTypeResponse.json();
+
+                    //-> wind
+                    const windTypeResponse = await fetch(`${process.env.CAPSULE_API_DOMAIN}api/meteorology/types/wind`);
+                    const windTypeResponseJson = await windTypeResponse.json();
+
                 //Search for location provide on GET
                 let ipmaForecast = [];
                 ipmaForecastResponseJson.map(obj =>  {
-                    if(obj.idPeriodo == 24)
-                        ipmaForecast.push(obj);
+                    //Only return object with 24 hour forecast (idPeriodo = 24), prevent return 1 hour forecast (idPeriodo = 1) 
+                    if(obj.idPeriodo == 24){ 
+                        //ipmaForecast.push(obj);
+                        
+                        ipmaForecast.push({
+                            temperature:{
+                                min:obj.tMin,
+                                max:obj.tMax
+                            },
+                            wind:{
+                                type:windTypeResponseJson[obj.idFfxVento],
+                                direction:obj.ddVento
+                            },
+                            rain:{
+                                type:rainTypeResponseJson[obj.idIntensidadePrecipita],
+                                probabilityPercentage:obj.probabilidadePrecipita
+                            },
+                            weather:weatherTypeResponseJson[obj.idTipoTempo],
+                            uv:obj.iUv
+                        });
+                    }
                 });
 
-                //Before return ipmaLocation check if is != empty (true => return location | false => return 404 status)
+                //Before return ipmaForecast check if is != empty (true => return forecast | false => return 404 status)
                 if(ipmaForecast.length != 0){
                     response.json(ipmaForecast);
                 }else{    
