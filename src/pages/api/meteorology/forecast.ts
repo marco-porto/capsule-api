@@ -2,7 +2,7 @@ import type { NextApiRequest, NextApiResponse } from 'next'
 
 export default async function forecast(request: NextApiRequest,response: NextApiResponse){
     //Check if request.method === GET (prevent none GET methods to this endpoint)
-    if(request.method === 'GET'){
+    if(request.method === 'POST'){
         if(request.body.localCode != undefined && request.body.localCode != null && request.body.localCode != '' ){
             //try catch to handle json unexpected token exception (if throw, probably location code doesnt exist and IPMA API rout, redirect to IPMA home page)
             try{

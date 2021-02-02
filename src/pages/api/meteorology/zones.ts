@@ -2,7 +2,7 @@ import type { NextApiRequest, NextApiResponse } from 'next'
 
 export default async function zones(request: NextApiRequest,response: NextApiResponse){
     //Check if request.method === GET (prevent none GET methods to this endpoint)
-    if(request.method === 'GET'){
+    if(request.method === 'POST'){
         if((request.body.local != undefined && request.body.local != null && request.body.local != '' ) && (request.body.filterBy != undefined && request.body.filterBy != null && request.body.filterBy != '' )){
             //Fetch locations list from ./lists/zones
             const locationsResponse = await fetch(`${process.env.CAPSULE_API_DOMAIN}api/meteorology/lists/zones`);
